@@ -1,12 +1,39 @@
+//Module for GameBoard(user interface)
+const gameBoard = (function() {
+
     //cache DOM
-    const board = document.querySelector('#board')
     const cells = document.querySelectorAll('.cell')
+    const restartBtn = document.querySelector('.restartBtn')
     const winningMessage = document.querySelector('.winningMessage')
     const message = document.querySelector('.message')
-    const restartBtn = document.querySelector('.restartBtn')
 
+     //initialise buttons
+     const initialiseBoard = function() {
+        cells.forEach((cell) => {
+            cell.addEventListener('click', gameLogic.applyGameLogic, {once: true})
+        })
+        restartBtn.addEventListener('click', resetBoard);
+    };
+
+    const resetBoard = function() {
+        winningMessage.style.display = 'none';
+        cells.forEach((cell) => {
+            cell.innerHTML = '';
+        })
+        initialiseBoard();
+        player = 'X'
+    }
+
+    return {initialiseBoard, cells: cells, message: message, winningMessage: winningMessage}
+
+})();    
+
+//Module for all the logic for tic tac toe
+const gameLogic = (function() {
+
+    let _player = 'X'
     //game logic
-    const winningCombos = [
+    const _winningCombos = [
         //horizontals
         [0, 1, 2],
         [3, 4, 5],
@@ -20,48 +47,43 @@
         [2, 4, 6]
     ];
 
-    let player = 'X'
-
-    //initialise buttons
-    cells.forEach((cell) => {
-        cell.addEventListener('click', applyGameLogic, {once: true})
-    })
-    
-    restartBtn.addEventListener('click', resetBoard)
-
-
-    
-    function applyGameLogic(cell) {
+    const applyGameLogic = function(cell) {
         applyMark(cell);
         if (checkWinner(cell)) {
-            message.innerHTML = `${player} Wins!`;
-            winningMessage.style.display = 'flex';
+            gameBoard.message.innerHTML = `${_player} Wins!`;
+            gameBoard.winningMessage.style.display = 'flex';
         } else if (checkDraw()) {
-            message.innerHTML = `Draw!`;
-            winningMessage.style.display = 'flex'; 
+            gameBoard.message.innerHTML = `Draw!`;
+            gameBoard.winningMessage.style.display = 'flex'; 
         }
-
         switchTurn();
     }
 
-    function applyMark(cell) {
-        cell.target.innerHTML = player;
+    const applyMark = function(cell) {
+        cell.target.innerHTML = _player;
     }
 
-    function switchTurn() {
-        player === 'X' ? player = 'O' : player = 'X';
+    const switchTurn = function() {
+        _player === 'X' ? _player = 'O' : _player = 'X';
     }
 
-    function checkWinner() {
-        return winningCombos.some((combo) => {
+    const checkWinner = function() {
+        return _winningCombos.some((combo) => {
             return combo.every((index)=> {
-                return [...cells][index].innerHTML === player;
+                return [...gameBoard.cells][index].innerHTML === _player;
             })
         })
     }
 
-    function checkDraw() {
-        return [...cells].every((cell) => {
+    const checkDraw = function() {
+        return [...gameBoard.cells].every((cell) => {
             return cell.innerHTML === 'X' || cell.innerHTML === 'O';
         })
     }
+
+    return {applyGameLogic}
+
+})();
+
+gameBoard.initialiseBoard();
+    
