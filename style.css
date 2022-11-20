@@ -1,0 +1,82 @@
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --cell-size: 100px;
+}
+
+body {
+    margin: 0;
+}
+
+.board {
+    display: grid;
+    height: 100vh;
+    width: 100vw;
+    justify-content: center;
+    align-content: center;
+    grid-template-columns: repeat(3, auto);
+}
+
+.cell {
+    width: var(--cell-size);
+    height: var(--cell-size);
+    border: solid;
+    display: grid;
+    align-items: center;
+    justify-items: center;
+    cursor: pointer;
+    font-size: 4rem;
+    font-family: monospace;
+}
+
+.cell:first-child, .cell:nth-child(2), .cell:nth-child(3) {
+    border-top: none;
+}
+
+.cell:nth-child(3n+1) {
+    border-left: none;
+}
+
+.cell:nth-child(3n) {
+    border-right: none;
+}
+
+.cell:nth-child(1n+7) {
+    border-bottom: none;
+}
+
+.winningMessage {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    position: fixed;
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+.restartBtn {
+    margin: 1rem;
+    border: black 5px solid;
+    background-color: white;
+    border-radius: 20px;
+    font-size: inherit;
+    padding: 1rem 2rem;
+}
+
+.message {
+    color: white;
+    font-family: monospace;
+    font-size: xxx-large;
+}
+
+.restartBtn:hover {
+    background-color: black;
+    border-color: white;
+    color: white;
+}
