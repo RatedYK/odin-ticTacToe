@@ -10,6 +10,30 @@ body {
     margin: 0;
 }
 
+.turnDisplay {
+    position: fixed;
+    display: flex;
+    right: 0;
+    left: 0;
+    justify-content: center;
+    gap: 3rem;
+    top: 5vh;
+    font-size: xx-large;
+    font-family: monospace;
+}
+
+.p1, .p2 {
+    padding: 1rem;
+    border-radius: 10px;
+}
+
+.p1.highlight, .p2.highlight {
+    box-shadow: 0 0 20px gray;
+    border: solid 1px black;
+    transform: scale(1.1);
+}
+
+
 .board {
     display: grid;
     height: 100vh;
@@ -29,6 +53,13 @@ body {
     cursor: pointer;
     font-size: 4rem;
     font-family: monospace;
+}
+
+.cell:hover {
+    transform: scale(0.9);
+    border: none;
+    border-radius: 30px;
+    box-shadow: 0 0 10px silver;
 }
 
 .cell:first-child, .cell:nth-child(2), .cell:nth-child(3) {
@@ -76,6 +107,64 @@ body {
 }
 
 .restartBtn:hover {
+    background-color: black;
+    border-color: white;
+    color: white;
+}
+
+.modeSelect {
+    display: flex; /*change this back to flex */
+    justify-content: center;
+    align-items: center;
+    gap: 3rem;
+    position: fixed;
+    background-color: rgba(0, 0, 0, 0.8);
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+}
+
+.playerAssign {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    background-color: rgba(0, 0, 0, 0.8);
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+}
+
+#playerAssignForm {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    color: white;
+    font-family: monospace;
+    font-size: xxx-large;
+}
+
+input[type='text'] {
+    font-family: monospace;
+    font-size: x-large;
+    padding: 0.5rem;
+    border-radius: 10px;
+}
+
+#playerAssignForm button {
+    font-family: monospace;
+    margin: 1rem;
+    border: black 5px solid;
+    background-color: white;
+    border-radius: 20px;
+    font-size: large;
+    padding: 1rem 2rem;
+}
+
+#playerAssignForm button:hover {
     background-color: black;
     border-color: white;
     color: white;

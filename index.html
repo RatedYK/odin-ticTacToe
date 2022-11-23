@@ -9,6 +9,23 @@
     <title>Tic Tac Toe</title>
 </head>
 <body>
+    <div class="modeSelect">
+        <div><button type="button" class="pvpBtn">VS Player</button></div>
+        <div><button type="button" class="aiBtn">VS Computer</button></div>
+    </div>
+    <div class="playerAssign">
+        <form action="" id="playerAssignForm">
+            <label for="xPlayer">X</label>
+            <input type="text" id="xPlayer" placeholder="Player 1">
+            <label for="oPlayer">O</label>
+            <input type="text" id="oPlayer" placeholder="Player 2">
+            <button type="submit">Let's Play!</button>
+        </form>
+    </div>
+    <div class="turnDisplay">
+        <div class="p1"></div>
+        <div class="p2"></div>
+    </div>
         <div class="board" id="board">
             <div class="cell"></div>
             <div class="cell"></div>
@@ -21,7 +38,7 @@
             <div class="cell"></div>
         </div>
     <div class="winningMessage">
-        <div class="message">Someone Wins</div>
+        <div class="message"></div>
         <button type="button" class="restartBtn">Restart</button>
     </div>
 </body>
