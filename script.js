@@ -27,6 +27,7 @@ const gameBoard = (function() {
             modeSelect.style.display = 'none';
             playerAssign.style.display = 'flex'
             assignPlayerMarks();
+            initialiseBoard();
         })
         aiBtn.addEventListener('click', ()=> {
             this.mode = 'ai'
@@ -59,7 +60,6 @@ const gameBoard = (function() {
 
             playerAssign.style.display = 'none'
             displayTurn.setNames(this.xPlayer.name, this.oPlayer.name);
-            initialiseBoard();
             return xPlayer, oPlayer;
         })
     }
@@ -100,11 +100,11 @@ const gameLogic = (function() {
     ];
 
     const applyGameLogic = function(cell) {
-        applyMark(cell);
+        playerMove(cell);
         
         if (checkWinnerPlayer()) {
             if (gameBoard.mode === 'ai') {
-                gameBoard.message.innerHTML = `${gameBoard.xPlayer.name} Wins!`
+                gameBoard.message.innerHTML = `${gameBoard.xPlayer.name} Wins!`;
             } else {
                 gameBoard.message.innerHTML = `${_currentTurnPlayer} Wins!`;
             };
@@ -118,7 +118,7 @@ const gameLogic = (function() {
         //logic for Player vs Computer
         if (gameBoard.mode === 'ai' && cell.target.innerHTML === 'X') { //checks to see if the player has made a legit move before AI takes turn
             displayTurn.switchHighlight();
-            let randomTimer = Math.floor(Math.random() * 450) + 100
+            let randomTimer = Math.floor(Math.random() * 450) + 100;
             setTimeout(AI.makeMove, randomTimer); //gives illusion of AI thinking for 100 - 449 milliseconds
         }
 
@@ -129,7 +129,7 @@ const gameLogic = (function() {
         }
     }
 
-    const applyMark = (cell) => {
+    const playerMove = (cell) => {
         if (cell.target.innerHTML !== '') return;
         cell.target.innerHTML = _currentTurn;
     }
@@ -149,7 +149,7 @@ const gameLogic = (function() {
     const checkWinnerAI = () => {
         return _winningCombos.some((combo) => {
             return combo.every((index)=> {
-                return [...gameBoard.cells][index].innerHTML === gameBoard.oPlayer.mark;
+                return [...gameBoard.cells][index].innerHTML === 'O';
         })})
     };
 
@@ -210,7 +210,6 @@ const AI = (function() {
 
         const availableSpots = checkAvailableSpots();
 
-        console.log('Smart Move');
         if (availableSpots > 6) {
             firstMove(); //always gets middle spot or one of the corners
             console.log('First Move')
@@ -243,7 +242,7 @@ const AI = (function() {
         for (let i = 0; i < 9; i++) {
             if (cells[i].innerHTML === '') {
                 cells[i].innerHTML = 'O';
-                if (checkOWinner()) {
+                if (gameLogic.checkWinnerAI()) {
                     _move = i;
                     return true;
                 }
@@ -256,7 +255,7 @@ const AI = (function() {
         for (let i = 0; i < 9; i++) {
             if (cells[i].innerHTML === '') {
                 cells[i].innerHTML = 'X';
-                if (checkXWinner()) {
+                if (gameLogic.checkWinnerPlayer()) {
                     _move = i;
                     cells[i].innerHTML = '';
                     return true;
@@ -278,32 +277,6 @@ const AI = (function() {
             else if (randomNumber === 3) return cells[8].innerHTML = 'O';
         }
     }
-
-    const checkOWinner = () => {
-
-        if ((cells[0].innerHTML === 'O') && (cells[1].innerHTML === 'O') && (cells[2].innerHTML === 'O')) {return true}
-         else if (cells[3].innerHTML === 'O' && cells[4].innerHTML === 'O' && cells[5].innerHTML === 'O') {return true}
-         else if (cells[6].innerHTML === 'O' && cells[7].innerHTML === 'O' && cells[8].innerHTML === 'O') {return true}
-         else if (cells[0].innerHTML === 'O' && cells[3].innerHTML === 'O' && cells[6].innerHTML === 'O') {return true}
-         else if (cells[1].innerHTML === 'O' && cells[4].innerHTML === 'O' && cells[7].innerHTML === 'O') {return true}
-         else if (cells[2].innerHTML === 'O' && cells[5].innerHTML === 'O' && cells[8].innerHTML === 'O') {return true}
-         else if (cells[0].innerHTML === 'O' && cells[4].innerHTML === 'O' && cells[8].innerHTML === 'O') {return true}
-         else if (cells[2].innerHTML === 'O' && cells[4].innerHTML === 'O' && cells[6].innerHTML === 'O') {return true}
-         else return false;
-    };
-
-    const checkXWinner = () => {
-
-        if ((cells[0].innerHTML === 'X') && (cells[1].innerHTML === 'X') && (cells[2].innerHTML === 'X')) return true;
-         else if (cells[3].innerHTML === 'X' && cells[4].innerHTML === 'X' && cells[5].innerHTML === 'X') return true;
-         else if (cells[6].innerHTML === 'X' && cells[7].innerHTML === 'X' && cells[8].innerHTML === 'X') return true;
-         else if (cells[0].innerHTML === 'X' && cells[3].innerHTML === 'X' && cells[6].innerHTML === 'X') return true;
-         else if (cells[1].innerHTML === 'X' && cells[4].innerHTML === 'X' && cells[7].innerHTML === 'X') return true;
-         else if (cells[2].innerHTML === 'X' && cells[5].innerHTML === 'X' && cells[8].innerHTML === 'X') return true;
-         else if (cells[0].innerHTML === 'X' && cells[4].innerHTML === 'X' && cells[8].innerHTML === 'X') return true;
-         else if (cells[2].innerHTML === 'X' && cells[4].innerHTML === 'X' && cells[6].innerHTML === 'X') return true;
-         else return false;
-    };
 
     const selectDifficulty = () => {
         easyBtn.addEventListener('click', setDifficulty)

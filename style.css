@@ -8,6 +8,23 @@
 
 body {
     margin: 0;
+    font-family: monospace;
+}
+
+.btn {
+    margin: 1rem;
+    border: black 5px solid;
+    background-color: white;
+    border-radius: 20px;
+    font-family: inherit;
+    font-size: xx-large;
+    padding: 1rem 2rem;
+}
+
+.btn:hover {
+    background-color: black;
+    border-color: white;
+    color: white;
 }
 
 .turnDisplay {
@@ -91,25 +108,10 @@ body {
     background-color: rgba(0, 0, 0, 0.8);
 }
 
-.restartBtn {
-    margin: 1rem;
-    border: black 5px solid;
-    background-color: white;
-    border-radius: 20px;
-    font-size: inherit;
-    padding: 1rem 2rem;
-}
-
 .message {
     color: white;
     font-family: monospace;
     font-size: xxx-large;
-}
-
-.restartBtn:hover {
-    background-color: black;
-    border-color: white;
-    color: white;
 }
 
 .modeSelect {
@@ -138,7 +140,7 @@ body {
 }
 
 .levelSelect {
-    display: none; /*change this back to flex */
+    display: none;
     flex-direction: column;
     justify-content: center;
     align-items: center;
@@ -153,24 +155,9 @@ body {
 
 .levelSelect .chooseDiffText {
     color: white;
-    font-family: monospace;
+    font-family: Arial, Helvetica, sans-serif;
+    letter-spacing: -2px;
     font-size: 3rem;
-}
-
-.levelSelect .btn {
-    font-family: monospace;
-    margin: 1rem;
-    border: black 5px solid;
-    background-color: white;
-    border-radius: 20px;
-    font-size: large;
-    padding: 1rem 2rem;
-}
-
-.levelSelect .btn:hover {
-    background-color: black;
-    border-color: white;
-    color: white;
 }
 
 .playerAssign {
@@ -200,22 +187,6 @@ input[type='text'] {
     font-size: x-large;
     padding: 0.5rem;
     border-radius: 10px;
-}
-
-#playerAssignForm button {
-    font-family: monospace;
-    margin: 1rem;
-    border: black 5px solid;
-    background-color: white;
-    border-radius: 20px;
-    font-size: large;
-    padding: 1rem 2rem;
-}
-
-#playerAssignForm button:hover {
-    background-color: black;
-    border-color: white;
-    color: white;
 }
 
 footer {
