@@ -116,6 +116,32 @@ body {
     display: flex; /*change this back to flex */
     justify-content: center;
     align-items: center;
+    gap: 10rem;
+    position: fixed;
+    background-color: rgba(0, 0, 0, 0.8);
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+}
+
+.pvpBtn {
+    width: 20vw;
+}
+
+.aiBtn:hover, .pvpBtn:hover {
+    transform: scale(1.1);
+}
+
+.aiBtn {
+    width: 15vw;
+}
+
+.levelSelect {
+    display: none; /*change this back to flex */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     gap: 3rem;
     position: fixed;
     background-color: rgba(0, 0, 0, 0.8);
@@ -123,6 +149,28 @@ body {
     right: 0;
     left: 0;
     bottom: 0;
+}
+
+.levelSelect .chooseDiffText {
+    color: white;
+    font-family: monospace;
+    font-size: 3rem;
+}
+
+.levelSelect .btn {
+    font-family: monospace;
+    margin: 1rem;
+    border: black 5px solid;
+    background-color: white;
+    border-radius: 20px;
+    font-size: large;
+    padding: 1rem 2rem;
+}
+
+.levelSelect .btn:hover {
+    background-color: black;
+    border-color: white;
+    color: white;
 }
 
 .playerAssign {

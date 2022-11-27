@@ -4,13 +4,18 @@ const gameBoard = (function() {
     let mode;
 
     //cache DOM
-    const cells = document.querySelectorAll('.cell')
-    const restartBtn = document.querySelector('.restartBtn')
-    const winningMessage = document.querySelector('.winningMessage')
-    const message = document.querySelector('.message')
-    const modeSelect = document.querySelector('.modeSelect')
-    const pvpBtn = document.querySelector('.pvpBtn')
-    const aiBtn = document.querySelector('.aiBtn')
+    const cells = document.querySelectorAll('.cell');
+    const restartBtn = document.querySelector('.restartBtn');
+    const winningMessage = document.querySelector('.winningMessage');
+    const message = document.querySelector('.message');
+    const modeSelect = document.querySelector('.modeSelect');
+    const pvpBtn = document.querySelector('.pvpBtn');
+    const aiBtn = document.querySelector('.aiBtn');
+
+    //DOM for AI mode
+    const levelSelect = document.querySelector('.levelSelect')
+
+    //DOM for PvP mode
     const playerAssign = document.querySelector('.playerAssign');
     const playerAssignForm = document.querySelector('#playerAssignForm')
     let xPlayer = document.querySelector('#xPlayer');
@@ -26,13 +31,15 @@ const gameBoard = (function() {
         aiBtn.addEventListener('click', ()=> {
             this.mode = 'ai'
             modeSelect.style.display = 'none';
+            levelSelect.style.display = 'flex';
             this.xPlayer = createPlayerFactory('Player', 'X');
-            this.oPlayer = createPlayerFactory('Computer', 'O')
+            this.oPlayer = createPlayerFactory('Computer', 'O');
             initialiseBoard();
             displayTurn.setNames(this.xPlayer.name, this.oPlayer.name);
+            AI.selectDifficulty();
         })
     }
-     //initialise buttons
+     //initialise the board to be clickable and also reset button after game ends
     const initialiseBoard = function() {
         cells.forEach((cell) => {
             cell.addEventListener('click', gameLogic.applyGameLogic, {once: true})
@@ -67,7 +74,7 @@ const gameBoard = (function() {
         initialiseBoard();
     }
 
-    return {selectGameMode, cells: cells, message: message, winningMessage: winningMessage, mode: mode, xPlayer: xPlayer, oPlayer: oPlayer}
+    return {selectGameMode, cells: cells, message: message, winningMessage: winningMessage, mode: mode, levelSelect, xPlayer: xPlayer, oPlayer: oPlayer}
 
 })();    
 
@@ -112,7 +119,7 @@ const gameLogic = (function() {
         if (gameBoard.mode === 'ai' && cell.target.innerHTML === 'X') { //checks to see if the player has made a legit move before AI takes turn
             displayTurn.switchHighlight();
             let randomTimer = Math.floor(Math.random() * 450) + 100
-            setTimeout(AI.smartMove, randomTimer); //gives illusion of AI thinking for 100 - 449 milliseconds
+            setTimeout(AI.makeMove, randomTimer); //gives illusion of AI thinking for 100 - 449 milliseconds
         }
 
         //logic for Player vs Player
@@ -165,42 +172,58 @@ const gameLogic = (function() {
 const AI = (function() {
     const cells = [...gameBoard.cells];
     let _move;
+    let _difficulty;
 
-    const randomMove = () => {
-        console.log('Random Move')
-        let randomIndex = Math.floor(Math.random() * 9);
-        if (cells[randomIndex].innerHTML === '') {
-            cells[randomIndex].innerHTML = 'O';
-            displayTurn.switchHighlight();
-            if (gameLogic.checkWinnerAI()) { //checkWinnerAI is inside here because of setTimeout preventing the if statement from firing correctly
+    //DOM for AI mode
+    const levelSelect = gameBoard.levelSelect;
+    const easyBtn = document.querySelector('#easyBtn');
+    const normalBtn = document.querySelector('#normalBtn');
+    const hardBtn = document.querySelector('#hardBtn');
+
+    const makeMove = () => {
+        if (_difficulty === 'easy') {
+            randomMove();
+        } else if (_difficulty === 'normal') {
+            let randomNum = Math.floor(Math.random() * 2); //1 or 0
+            randomNum === 0 ? randomMove() : smartMove();
+        } else if (_difficulty === 'hard') {
+            smartMove();
+        } else console.log('something went wrong')
+
+        displayTurn.switchHighlight();
+        if (gameLogic.checkWinnerAI()) { //checkWinnerAI is inside here because of setTimeout preventing the if statement from firing correctly
                 gameBoard.message.innerHTML = `${gameBoard.oPlayer.name} Wins!`;
                 gameBoard.winningMessage.style.display = 'flex';
             }
+    }
+
+    const randomMove = () => {
+        let randomIndex = Math.floor(Math.random() * 9);
+        if (cells[randomIndex].innerHTML === '') {
+            cells[randomIndex].innerHTML = 'O';
         } else if (cells.every((cell) => cell.innerHTML !== '')) {
             return;
         } else randomMove();
     }
 
     const smartMove = () => {
+
         const availableSpots = checkAvailableSpots();
 
+        console.log('Smart Move');
         if (availableSpots > 6) {
-            randomMove();
-            console.log('Random move')
+            firstMove(); //always gets middle spot or one of the corners
+            console.log('First Move')
         } else if (availableSpots <= 6 && availableSpots !== 0) {
             if (winMove()) {
                 console.log('Win Move')
                 cells[_move].innerHTML = 'O';
-                gameBoard.message.innerHTML = `${gameBoard.oPlayer.name} Wins!`;
-                gameBoard.winningMessage.style.display = 'flex';
             } else if (stopMove()) {
                 console.log('Stop Move')
                 cells[_move].innerHTML = 'O'
             } else randomMove();
         }
-        else console.log('Bad thing happend')
-
-        displayTurn.switchHighlight();
+        else console.log('DRAW or smartMove broke')
 
     }
 
@@ -243,6 +266,19 @@ const AI = (function() {
         }
     }
 
+    const firstMove = () => {
+        if (cells[4].innerHTML === '') {
+            cells[4].innerHTML = 'O';
+            return;
+        } else {
+            let randomNumber = Math.floor(Math.random() * 4); //0 to 3
+            if (randomNumber === 0) return cells[0].innerHTML = 'O';
+            else if (randomNumber === 1) return cells[2].innerHTML = 'O';
+            else if (randomNumber === 2) return cells[6].innerHTML = 'O';
+            else if (randomNumber === 3) return cells[8].innerHTML = 'O';
+        }
+    }
+
     const checkOWinner = () => {
 
         if ((cells[0].innerHTML === 'O') && (cells[1].innerHTML === 'O') && (cells[2].innerHTML === 'O')) {return true}
@@ -269,14 +305,19 @@ const AI = (function() {
          else return false;
     };
 
-    const AIcheckDraw = (cells) => {
-        cells.forEach((cell) => {
-            if (cell.innerHTML === '') return false;
-        })
-        return true;
+    const selectDifficulty = () => {
+        easyBtn.addEventListener('click', setDifficulty)
+        normalBtn.addEventListener('click', setDifficulty)
+        hardBtn.addEventListener('click', setDifficulty)
+    };
+
+    const setDifficulty = (e) => {
+        _difficulty = e.target.value;
+        console.log(_difficulty);
+        levelSelect.style.display = 'none';
     }
 
-    return {randomMove, AIcheckDraw, smartMove}
+    return {makeMove, selectDifficulty}
 
 })();
 

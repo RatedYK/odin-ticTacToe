@@ -10,8 +10,8 @@
 </head>
 <body>
     <div class="modeSelect">
-        <div><button type="button" class="pvpBtn">VS Player</button></div>
-        <div><button type="button" class="aiBtn">VS Computer</button></div>
+        <div><input type="image" alt="PvP Mode" src="./icons/player-versus-player.png" class="pvpBtn"></div>
+        <div><input type="image" alt="AI Mode" src="./icons/ai.png" class="aiBtn"></div>
     </div>
     <div class="playerAssign">
         <form action="" id="playerAssignForm">
@@ -21,6 +21,12 @@
             <input type="text" id="oPlayer" placeholder="Player 2">
             <button type="submit">Let's Play!</button>
         </form>
+    </div>
+    <div class="levelSelect">
+        <h1 class="chooseDiffText">Choose difficulty:</h1>
+        <button type="button" value="easy" class="btn" id="easyBtn">Easy</button>
+        <button type="button" value="normal" class="btn" id="normalBtn">Normal</button>
+        <button type="button" value="hard" class="btn" id="hardBtn">Hard</button>
     </div>
     <div class="turnDisplay">
         <div class="p1"></div>
