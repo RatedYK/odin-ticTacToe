@@ -16,7 +16,7 @@ const gameBoard = (function() {
     let xPlayer = document.querySelector('#xPlayer');
     let oPlayer = document.querySelector('#oPlayer');
 
-    const selectGameMode = function() {
+    const selectGameMode = function () {
         pvpBtn.addEventListener('click', ()=> {
             this.mode = 'pvp';
             modeSelect.style.display = 'none';
@@ -26,7 +26,7 @@ const gameBoard = (function() {
         aiBtn.addEventListener('click', ()=> {
             this.mode = 'ai'
             modeSelect.style.display = 'none';
-            this.xPlayer = createPlayerFactory('Player 1', 'X');
+            this.xPlayer = createPlayerFactory('Player', 'X');
             this.oPlayer = createPlayerFactory('Computer', 'O')
             initialiseBoard();
             displayTurn.setNames(this.xPlayer.name, this.oPlayer.name);
@@ -112,7 +112,7 @@ const gameLogic = (function() {
         if (gameBoard.mode === 'ai' && cell.target.innerHTML === 'X') { //checks to see if the player has made a legit move before AI takes turn
             displayTurn.switchHighlight();
             let randomTimer = Math.floor(Math.random() * 450) + 100
-            setTimeout(AI.applyMark, randomTimer); //gives illusion of AI thinking for 100 - 449 milliseconds
+            setTimeout(AI.smartMove, randomTimer); //gives illusion of AI thinking for 100 - 449 milliseconds
         }
 
         //logic for Player vs Player
@@ -122,31 +122,31 @@ const gameLogic = (function() {
         }
     }
 
-    const applyMark = function(cell) {
+    const applyMark = (cell) => {
         if (cell.target.innerHTML !== '') return;
         cell.target.innerHTML = _currentTurn;
     }
 
-    const switchTurn = function() {
+    const switchTurn = () => {
         _currentTurn === xPlayer.mark ? _currentTurn = oPlayer.mark : _currentTurn = xPlayer.mark;
         _currentTurnPlayer === oPlayer.name ? _currentTurnPlayer = xPlayer.name : _currentTurnPlayer = oPlayer.name;
     }
 
-    const checkWinnerPlayer = function() {
+    const checkWinnerPlayer = () => {
             return _winningCombos.some((combo) => {
                 return combo.every((index)=> {
                     return [...gameBoard.cells][index].innerHTML === _currentTurn;
             })})
     };
 
-    const checkWinnerAI = function() {
+    const checkWinnerAI = () => {
         return _winningCombos.some((combo) => {
             return combo.every((index)=> {
                 return [...gameBoard.cells][index].innerHTML === gameBoard.oPlayer.mark;
         })})
-};
+    };
 
-    const checkDraw = function() {
+    const checkDraw = () => {
         return [...gameBoard.cells].every((cell) => {
             return cell.innerHTML === 'X' || cell.innerHTML === 'O';
         })
@@ -157,29 +157,126 @@ const gameLogic = (function() {
         _currentTurnPlayer = '';
     }
 
-    return {applyGameLogic, resetTurns, checkWinnerAI}
+    return {applyGameLogic, resetTurns, checkWinnerAI, checkDraw, checkWinnerPlayer}
 
 })();
 
 //Module for AI
 const AI = (function() {
     const cells = [...gameBoard.cells];
+    let _move;
 
-    const applyMark = function() {
+    const randomMove = () => {
+        console.log('Random Move')
         let randomIndex = Math.floor(Math.random() * 9);
         if (cells[randomIndex].innerHTML === '') {
             cells[randomIndex].innerHTML = 'O';
             displayTurn.switchHighlight();
-            if (gameLogic.checkWinnerAI()) {
+            if (gameLogic.checkWinnerAI()) { //checkWinnerAI is inside here because of setTimeout preventing the if statement from firing correctly
                 gameBoard.message.innerHTML = `${gameBoard.oPlayer.name} Wins!`;
                 gameBoard.winningMessage.style.display = 'flex';
             }
         } else if (cells.every((cell) => cell.innerHTML !== '')) {
             return;
-        } else applyMark();
+        } else randomMove();
     }
 
-    return {applyMark}
+    const smartMove = () => {
+        const availableSpots = checkAvailableSpots();
+
+        if (availableSpots > 6) {
+            randomMove();
+            console.log('Random move')
+        } else if (availableSpots <= 6 && availableSpots !== 0) {
+            if (winMove()) {
+                console.log('Win Move')
+                cells[_move].innerHTML = 'O';
+                gameBoard.message.innerHTML = `${gameBoard.oPlayer.name} Wins!`;
+                gameBoard.winningMessage.style.display = 'flex';
+            } else if (stopMove()) {
+                console.log('Stop Move')
+                cells[_move].innerHTML = 'O'
+            } else randomMove();
+        }
+        else console.log('Bad thing happend')
+
+        displayTurn.switchHighlight();
+
+    }
+
+    const checkAvailableSpots = () => {
+        let counter = 0;
+
+        for (let i = 0; i < 9; i++) {
+            if (cells[i].innerHTML === '') {
+                counter++
+                //console.log(counter);
+            }
+        }
+        return counter;
+    }
+
+    const winMove = () => {
+        for (let i = 0; i < 9; i++) {
+            if (cells[i].innerHTML === '') {
+                cells[i].innerHTML = 'O';
+                if (checkOWinner()) {
+                    _move = i;
+                    return true;
+                }
+                cells[i].innerHTML = '';
+            }
+        }
+    }
+
+    const stopMove = () => {
+        for (let i = 0; i < 9; i++) {
+            if (cells[i].innerHTML === '') {
+                cells[i].innerHTML = 'X';
+                if (checkXWinner()) {
+                    _move = i;
+                    cells[i].innerHTML = '';
+                    return true;
+                }
+                cells[i].innerHTML = '';
+            }
+        }
+    }
+
+    const checkOWinner = () => {
+
+        if ((cells[0].innerHTML === 'O') && (cells[1].innerHTML === 'O') && (cells[2].innerHTML === 'O')) {return true}
+         else if (cells[3].innerHTML === 'O' && cells[4].innerHTML === 'O' && cells[5].innerHTML === 'O') {return true}
+         else if (cells[6].innerHTML === 'O' && cells[7].innerHTML === 'O' && cells[8].innerHTML === 'O') {return true}
+         else if (cells[0].innerHTML === 'O' && cells[3].innerHTML === 'O' && cells[6].innerHTML === 'O') {return true}
+         else if (cells[1].innerHTML === 'O' && cells[4].innerHTML === 'O' && cells[7].innerHTML === 'O') {return true}
+         else if (cells[2].innerHTML === 'O' && cells[5].innerHTML === 'O' && cells[8].innerHTML === 'O') {return true}
+         else if (cells[0].innerHTML === 'O' && cells[4].innerHTML === 'O' && cells[8].innerHTML === 'O') {return true}
+         else if (cells[2].innerHTML === 'O' && cells[4].innerHTML === 'O' && cells[6].innerHTML === 'O') {return true}
+         else return false;
+    };
+
+    const checkXWinner = () => {
+
+        if ((cells[0].innerHTML === 'X') && (cells[1].innerHTML === 'X') && (cells[2].innerHTML === 'X')) return true;
+         else if (cells[3].innerHTML === 'X' && cells[4].innerHTML === 'X' && cells[5].innerHTML === 'X') return true;
+         else if (cells[6].innerHTML === 'X' && cells[7].innerHTML === 'X' && cells[8].innerHTML === 'X') return true;
+         else if (cells[0].innerHTML === 'X' && cells[3].innerHTML === 'X' && cells[6].innerHTML === 'X') return true;
+         else if (cells[1].innerHTML === 'X' && cells[4].innerHTML === 'X' && cells[7].innerHTML === 'X') return true;
+         else if (cells[2].innerHTML === 'X' && cells[5].innerHTML === 'X' && cells[8].innerHTML === 'X') return true;
+         else if (cells[0].innerHTML === 'X' && cells[4].innerHTML === 'X' && cells[8].innerHTML === 'X') return true;
+         else if (cells[2].innerHTML === 'X' && cells[4].innerHTML === 'X' && cells[6].innerHTML === 'X') return true;
+         else return false;
+    };
+
+    const AIcheckDraw = (cells) => {
+        cells.forEach((cell) => {
+            if (cell.innerHTML === '') return false;
+        })
+        return true;
+    }
+
+    return {randomMove, AIcheckDraw, smartMove}
 
 })();
 
@@ -221,5 +318,4 @@ const displayTurn = (function() {
     return {setNames, switchHighlight, setStartHighlight, resetHighlight};
 })();
 
-gameBoard.selectGameMode();
-    
+gameBoard.selectGameMode(); //runs the game
